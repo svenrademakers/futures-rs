@@ -231,6 +231,12 @@ impl LocalPool {
         })
     }
 
+    pub fn run_once(&mut self) {
+        poll_executor(|ctx| {
+            let _ = self.poll_pool_once(ctx);
+        })
+    }
+
     /// Runs all tasks in the pool and returns if no more progress can be made
     /// on any task.
     ///
@@ -294,7 +300,8 @@ impl LocalPool {
         }
 
         // try to execute the next ready future
-        self.pool.poll_next_unpin(cx)
+        let _ = self.pool.poll_next_unpin(cx);
+        Poll::Ready(None)
     }
 }
 
